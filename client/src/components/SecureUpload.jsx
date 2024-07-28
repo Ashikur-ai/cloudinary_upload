@@ -8,11 +8,13 @@ const SecureUpload = () => {
   const [video, setVideo] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const uploadFile = async (type) => {
+  const uploadFile = async (type, timestamp, signature) => {
     const data = new FormData();
 
     data.append("file", type === 'image' ? img : video);
-    data.append("upload_preset", type === 'image' ? 'images_preset' : 'videos_preset');
+    data.append("timestamp", timestamp);
+    data.append("signature", signature);
+    data.append("api_key", import.meta.env.VITE_REACT_APP_CLOUDINARY_API);
 
     try {
       let cloudName = import.meta.env.VITE_REACT_APP_CLOUDINARY_CLOUD_NAME;
@@ -28,16 +30,33 @@ const SecureUpload = () => {
     }
   }
 
+  const getSignatureForUpload = async (folder) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/sign-upload`, { folder });
+      return res.data;
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setLoading(true);
 
+      // Get signature for image upload 
+      const { timestamp: imgTimestamp, signature: imgSignature } = await getSignatureForUpload('images');
+
+      // Get signature for video upload 
+      const { timestamp: videoTimestamp, signature: videoSignature } = await getSignatureForUpload('videos');
+
+
       // upload image file 
-      const imgUrl = await uploadFile('image');
+      const imgUrl = await uploadFile('image', imgTimestamp, imgSignature);
 
       // upload video file  
-      const videoUrl = await uploadFile('video');
+      const videoUrl = await uploadFile('video', videoTimestamp, videoSignature);
 
       // Send backend api request 
       // await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/videos`, { imgUrl, videoUrl });
