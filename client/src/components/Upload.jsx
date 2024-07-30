@@ -40,7 +40,7 @@ const Upload = () => {
       const videoUrl = await uploadFile('video');
 
       // Send backend api request 
-      // await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/videos`, { imgUrl, videoUrl });
+      await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/videos`, { imgUrl, videoUrl });
 
       // Reset states 
       setImg(null);

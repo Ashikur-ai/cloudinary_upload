@@ -9,12 +9,16 @@ const SecureUpload = () => {
   const [loading, setLoading] = useState(false);
 
   const uploadFile = async (type, timestamp, signature) => {
+
+    const folder = type === 'image' ? 'images' : 'videos';
+
     const data = new FormData();
 
     data.append("file", type === 'image' ? img : video);
     data.append("timestamp", timestamp);
     data.append("signature", signature);
     data.append("api_key", import.meta.env.VITE_REACT_APP_CLOUDINARY_API);
+    data.append("folder", folder);
 
     try {
       let cloudName = import.meta.env.VITE_REACT_APP_CLOUDINARY_CLOUD_NAME;
@@ -59,7 +63,7 @@ const SecureUpload = () => {
       const videoUrl = await uploadFile('video', videoTimestamp, videoSignature);
 
       // Send backend api request 
-      // await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/videos`, { imgUrl, videoUrl });
+      await axios.post(`${import.meta.env.VITE_REACT_APP_BACKEND_BASEURL}/api/videos`, { imgUrl, videoUrl });
 
       // Reset states 
       setImg(null);

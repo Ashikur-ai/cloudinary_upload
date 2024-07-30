@@ -22,6 +22,10 @@ app.use("/api/sign-upload", signUploadRoutes);
 
 app.use(errorHandler);
 
+app.get('/', async (req, res) => {
+  return res.json('server is running');
+})
+
 // Listen to the Requests 
 app.listen(port, () => {
   // connect to DB 
